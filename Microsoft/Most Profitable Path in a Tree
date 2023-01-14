@@ -1,0 +1,65 @@
+class Solution {
+    public int mostProfitablePath(int[][] edges, int bob, int[] amount) {
+        ArrayList<ArrayList<Integer>> graph=new ArrayList<>();
+        int n=amount.length;
+        for(int i=0;i<n;i++){
+            graph.add(new ArrayList<>());
+        }
+        for(int i=0;i<edges.length;i++){
+            int x=edges[i][0];
+            int y=edges[i][1];
+            graph.get(x).add(y);
+            graph.get(y).add(x);
+        }
+        // graph is created
+        solve(graph,amount,bob);
+        return solve_alice(graph,amount,0,new boolean[amount.length]);
+        
+    }
+    public int solve_alice(ArrayList<ArrayList<Integer>> graph,int[] amount,int node,boolean[] seen){
+        int res=Integer.MIN_VALUE;
+       
+        seen[node]=true;
+        for(int nbr:graph.get(node)){
+            if(seen[nbr]==true) continue;
+            res=Math.max(res,solve_alice(graph,amount,nbr,seen));
+            
+        }
+        return res==Integer.MIN_VALUE?amount[node]:amount[node]+res;
+
+    }
+    public void solve(ArrayList<ArrayList<Integer>> graph,int[] amount,int bob){
+        boolean[] seen=new boolean[amount.length];
+        int[] blist=new int[amount.length];
+        // this is used for to trace the path for bob
+        seen[bob]=true;
+        Queue<Integer> q=new ArrayDeque<>();
+        q.add(bob);
+        while(q.size()>0){
+            int x=q.poll();
+            for(int nbr:graph.get(x)){
+                if(seen[nbr]==true) continue;
+                blist[nbr]=x;
+                if(nbr==0) break;
+                q.add(nbr);
+                seen[nbr]=true;
+            }
+        }
+        ArrayList<Integer> list=new ArrayList<>();
+        list.add(0);
+        int p=0;
+        while(p!=bob){
+            p=blist[p];
+            list.add(p);
+        }
+        int lsize=list.size();
+        for(int i=0;i<lsize/2;i++) amount[list.get(lsize-1-i)]=0;
+        
+        if(lsize%2!=0) {
+            int midind=lsize/2;
+            amount[list.get(midind)]=amount[list.get(midind)]/2;
+        }
+
+
+    }
+}
