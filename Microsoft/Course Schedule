@@ -1,0 +1,38 @@
+class Solution {
+    public boolean canFinish(int n, int[][] pre) {
+        ArrayList<ArrayList<Integer>> graph=new ArrayList<>();
+        for(int i=0;i<n;i++){
+            graph.add(new ArrayList<>());
+        }
+        for(int i=0;i<pre.length;i++){
+            int u=pre[i][0];
+            int v=pre[i][1];
+            graph.get(v).add(u);
+        }
+        // graph is made now we have to create  a indegree array to know how many numbers are pointing on a number
+        int[] indegree=new int[n];
+        for(int i=0;i<n;i++){
+            for(int nbr:graph.get(i)){
+                indegree[nbr]++;
+            }
+        }
+        ArrayDeque<Integer>q=new ArrayDeque<>();
+        for(int i=0;i<n;i++){
+            if(indegree[i]==0) q.add(i);
+        }
+        int idx=0;
+        while(q.size()>0){
+            int v=q.poll();
+            idx++;
+            for(int nbr:graph.get(v)){
+                indegree[nbr]--;
+                if(indegree[nbr]==0){
+                    q.add(nbr);
+                }
+            }
+        }
+       if(idx==n) return true;
+       return false;
+
+    }
+}
